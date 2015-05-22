@@ -2,7 +2,7 @@
 
 namespace Rogolev.Nsudotnet.TaskSheduler
 {
-    class TaskManager : JobStarter
+    public class TaskManager : JobStarter
     {
         public void SheduleDelayedJob(IJob job, TimeSpan delay)
         {

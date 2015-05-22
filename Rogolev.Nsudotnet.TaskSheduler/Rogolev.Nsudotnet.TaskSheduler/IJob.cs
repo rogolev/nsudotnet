@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Rogolev.Nsudotnet.TaskSheduler
 {
-    interface IJob
+    public interface IJob
     {
         void Execute(object argument);
     }

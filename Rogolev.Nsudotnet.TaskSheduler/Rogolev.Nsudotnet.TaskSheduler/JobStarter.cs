@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Rogolev.Nsudotnet.TaskSheduler
 {
-    internal abstract class JobStarter
+    public abstract class JobStarter
     {
         protected void StartJob(IJob job)
         {
