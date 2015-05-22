@@ -105,6 +105,10 @@ namespace Rogolev.Nsudotnet.TaskSheduler
                 }
                 min = _min;
             }
+            else
+            {
+                return GetNexDateTime(currentDateTime.AddMinutes(1));
+            }
 
             return new DateTime(year, month, day, hour, min, 1);
         }
@@ -150,7 +154,8 @@ namespace Rogolev.Nsudotnet.TaskSheduler
 
         private bool ValuesAreValid()
         {
-            return (MonthIsValid() && DayOfMonthIsValid() && HourIsValid() && MinIsValid() && DayOfWeekIsValid());
+            return ((MonthIsValid() && DayOfMonthIsValid() && HourIsValid() && MinIsValid() && DayOfWeekIsValid()) && 
+                !(_month == -1 && _dayOfMonth == -1 && _hour == -1 && _min == -1 && _dayOfWeek == -1));
         }
 
         private bool DayOfWeekIsValid()
