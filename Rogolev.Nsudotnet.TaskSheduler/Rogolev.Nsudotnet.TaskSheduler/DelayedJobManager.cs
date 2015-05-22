@@ -19,7 +19,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
         public void Execute(object argument)
         {
             Thread.Sleep(_delay);
-            StartJob(_job);
+            StartJob(_job, argument);
         }
     }
 }

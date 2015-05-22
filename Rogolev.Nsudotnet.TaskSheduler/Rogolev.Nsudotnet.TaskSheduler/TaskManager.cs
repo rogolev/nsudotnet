@@ -4,25 +4,25 @@ namespace Rogolev.Nsudotnet.TaskSheduler
 {
     public class TaskManager : JobStarter
     {
-        public void SheduleDelayedJob(IJob job, TimeSpan delay)
+        public void SheduleDelayedJob(IJob job, TimeSpan delay, object argument)
         {
             IJob delayedJobManager = new DelayedJobManager(job, delay);
-            StartJob(delayedJobManager);
+            StartJob(delayedJobManager, argument);
         }
 
-        public void ShedulePeriodicJob(IJob job, TimeSpan period)
+        public void ShedulePeriodicJob(IJob job, TimeSpan period, object argument)
         {
             IJob periodicJobManager = new PeriodicJobManager(job, period);
-            StartJob(periodicJobManager);
+            StartJob(periodicJobManager, argument);
         }
 
-        public void ShedulePeriodicJob(IJob job, string cronExpression)
+        public void ShedulePeriodicJob(IJob job, string cronExpression, object argument)
         {
             try
             {
                 CronExpression cronExpressionInstance = new CronExpression(cronExpression);
                 IJob cronJobManager = new CronJobManager(job, cronExpressionInstance);
-                StartJob(cronJobManager);
+                StartJob(cronJobManager, argument);
             }
             catch (InvalidCronExpressionException e)
             {

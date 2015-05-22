@@ -9,10 +9,10 @@ namespace Rogolev.Nsudotnet.TaskSheduler
 {
     public abstract class JobStarter
     {
-        protected void StartJob(IJob job)
+        protected void StartJob(IJob job, object parameter)
         {
             Thread jobThread = new Thread(job.Execute);
-            jobThread.Start();
+            jobThread.Start(parameter);
         }
     }
 }

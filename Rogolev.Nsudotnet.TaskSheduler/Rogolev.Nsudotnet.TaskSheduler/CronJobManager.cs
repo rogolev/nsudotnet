@@ -21,7 +21,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
                 DateTime currentDateTime = DateTime.Now;
                 DateTime nextDateTime = _cronExpression.GetNexDateTime(currentDateTime);
                 Thread.Sleep(nextDateTime.Subtract(currentDateTime));
-                StartJob(_job);
+                StartJob(_job, argument);
             }
         }
     }

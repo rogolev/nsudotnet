@@ -17,7 +17,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
             while (true)
             {
                 Thread.Sleep(_period);
-                StartJob(_job);
+                StartJob(_job, argument);
             }
         }
 
