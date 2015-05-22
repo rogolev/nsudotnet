@@ -75,7 +75,7 @@ namespace Rogolev.Nsudotnet.Enigma
             string keyFileExtension = string.Concat(keyFileAdditionalExtension, Path.GetExtension(inFileName));
             string keyFileName = Path.ChangeExtension(inFileName, keyFileExtension);
             StoreKey(keyFileName, algo.IV, algo.Key);
-            Encryptor encryptor = new Encryptor(inFileName, outFileName, algo);
+            FileEncryptor encryptor = new FileEncryptor(inFileName, outFileName, algo);
             encryptor.PerformTransformation();
         }
 
@@ -95,7 +95,7 @@ namespace Rogolev.Nsudotnet.Enigma
             RestoreKey(keyFileName, out iv, out key);
             algo.IV = iv;
             algo.Key = key;
-            Decryptor decryptor = new Decryptor(inFileName, outFileName, algo);
+            FileDecryptor decryptor = new FileDecryptor(inFileName, outFileName, algo);
             decryptor.PerformTransformation();
         }
 

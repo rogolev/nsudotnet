@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Decryptor.cs" />
-    <Compile Include="Encryptor.cs" />
+    <Compile Include="FileDecryptor.cs" />
+    <Compile Include="FileEncryptor.cs" />
     <Compile Include="FileConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
