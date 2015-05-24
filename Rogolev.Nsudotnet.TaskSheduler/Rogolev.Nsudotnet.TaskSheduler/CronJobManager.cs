@@ -7,7 +7,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
     {
         private CronExpression _cronExpression;
         private IJob _job;
-
+        private int _oneMinute = 6000;
         public CronJobManager(IJob job, CronExpression cronExpression)
         {
             _job = job;
@@ -22,6 +22,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
                 DateTime nextDateTime = _cronExpression.GetNexDateTime(currentDateTime);
                 Thread.Sleep(nextDateTime.Subtract(currentDateTime));
                 StartJob(_job, argument);
+                Thread.Sleep(_oneMinute);
             }
         }
     }
