@@ -7,7 +7,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
     {
         private CronExpression _cronExpression;
         private IJob _job;
-        private int _oneMinute = 6000;
+        private TimeSpan _oneMinute = new TimeSpan(0, 0, 1, 0);
         public CronJobManager(IJob job, CronExpression cronExpression)
         {
             _job = job;
@@ -20,7 +20,8 @@ namespace Rogolev.Nsudotnet.TaskSheduler
             {
                 DateTime currentDateTime = DateTime.Now;
                 DateTime nextDateTime = _cronExpression.GetNexDateTime(currentDateTime);
-                Thread.Sleep(nextDateTime.Subtract(currentDateTime));
+                if (!nextDateTime.Equals(nextDateTime))
+                    Thread.Sleep(nextDateTime.Subtract(currentDateTime));
                 StartJob(_job, argument);
                 Thread.Sleep(_oneMinute);
             }
