@@ -6,9 +6,9 @@ namespace Rogolev.Nsudotnet.Enigma
 {
     class Program
     {
-        private readonly static string Usage =
-            string.Concat("Usage: <encrypt|decrypt> <algortihm> <input file> (<key file>) <output file> ", "\n",
-            "Note: <key file> is only necessary if you need to decrypt an input file");
+        private const string Usage =
+            "Usage: <encrypt|decrypt> <algortihm> <input file> (<key file>) <output file> " + "\n" +
+            "Note: <key file> is only necessary if you need to decrypt an input file";
         static void Main(string[] args)
         {
             if (args.Length != 4 && args.Length != 5)
@@ -43,6 +43,10 @@ namespace Rogolev.Nsudotnet.Enigma
             catch (AlgorithmNotSupportedException e)
             {
                 Console.WriteLine(string.Concat("Algorithm ", e.Message, " is not supported"));
+            }
+            catch (InvalidKeyFileException e)
+            {
+                Console.WriteLine("Invalid key file");
             }
             
         }
@@ -83,9 +87,11 @@ namespace Rogolev.Nsudotnet.Enigma
         {
             using (var keyFileStream = new FileStream(keyFileName, FileMode.Create, FileAccess.Write)) 
             {
-                var keyWriter = new BinaryWriter(keyFileStream);
-                keyWriter.Write(Convert.ToBase64String(iv));
-                keyWriter.Write(Convert.ToBase64String(key));
+                using (var streamWriter = new StreamWriter(keyFileStream))
+                {
+                    streamWriter.WriteLine(Convert.ToBase64String(iv));
+                    streamWriter.WriteLine(Convert.ToBase64String(key));
+                }
             }
         }
 
@@ -101,12 +107,29 @@ namespace Rogolev.Nsudotnet.Enigma
 
         private static void RestoreKey(string keyFileName, out byte[] iv, out byte[] key)
         {
+            string base64Key, base64Iv;
             using (var keyFileStream = new FileStream(keyFileName, FileMode.Open, FileAccess.Read))
             {
-                var keyReader = new BinaryReader(keyFileStream);
-                iv = Convert.FromBase64String(keyReader.ReadString());
-                key = Convert.FromBase64String(keyReader.ReadString());
+                using (StreamReader streamReader = new StreamReader(keyFileStream))
+                {
+                    base64Iv = streamReader.ReadLine();
+                    base64Key = streamReader.ReadLine();
+                }
             }
+
+            if (base64Iv != null && base64Key != null)
+            {
+                iv = Convert.FromBase64String(base64Iv);
+                key = Convert.FromBase64String(base64Key);
+            }
+            else
+            {
+                throw new InvalidKeyFileException();
+            }
+        }
+
+        internal class InvalidKeyFileException : Exception
+        {
         }
     }
 }
