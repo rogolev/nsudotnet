@@ -106,7 +106,7 @@ namespace Rogolev.Nsudotnet.TaskSheduler
                 min = _min;
             }
 
-            return new DateTime(year, month, day, hour, min, 1);
+            return new DateTime(year, month, day, hour, min, currentDateTime.Second);
         }
 
         private SortedSet<int> GetValidDays(DateTime dateTime)
