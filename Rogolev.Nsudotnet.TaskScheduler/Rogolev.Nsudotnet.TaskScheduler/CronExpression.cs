@@ -105,7 +105,6 @@ namespace Rogolev.Nsudotnet.TaskScheduler
                 }
                 min = _min;
             }
-
             return new DateTime(year, month, day, hour, min, currentDateTime.Second);
         }
 
