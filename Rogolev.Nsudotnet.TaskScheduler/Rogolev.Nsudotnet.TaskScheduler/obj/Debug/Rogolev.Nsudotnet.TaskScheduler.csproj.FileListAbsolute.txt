@@ -1,4 +1,0 @@
-c:\users\eugene\documents\visual studio 2013\Projects\Rogolev.Nsudotnet.TaskScheduler\Rogolev.Nsudotnet.TaskScheduler\bin\Debug\Rogolev.Nsudotnet.TaskScheduler.dll
-c:\users\eugene\documents\visual studio 2013\Projects\Rogolev.Nsudotnet.TaskScheduler\Rogolev.Nsudotnet.TaskScheduler\bin\Debug\Rogolev.Nsudotnet.TaskScheduler.pdb
-c:\users\eugene\documents\visual studio 2013\Projects\Rogolev.Nsudotnet.TaskScheduler\Rogolev.Nsudotnet.TaskScheduler\obj\Debug\Rogolev.Nsudotnet.TaskScheduler.dll
-c:\users\eugene\documents\visual studio 2013\Projects\Rogolev.Nsudotnet.TaskScheduler\Rogolev.Nsudotnet.TaskScheduler\obj\Debug\Rogolev.Nsudotnet.TaskScheduler.pdb
