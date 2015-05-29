@@ -1,40 +1,42 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Threading;
-using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
 namespace Rogolev.Nsudotnet.TaskScheduler
 {
     internal abstract class JobsManager<T> : IDisposable
     {
-        protected readonly BlockingCollection<JobInfo<T>> _unmanagedJobs;
-        protected bool _stayActive;
-        protected readonly Mutex _mutex;
-        protected HashSet<Timer> _timers;
+        protected readonly BlockingCollection<JobInfo<T>> UnmanagedJobs;
+        protected bool StayActive;
+        protected Mutex _mutex;
+        protected HashSet<Timer> Timers;
+        private bool disposed;
 
-        protected JobsManager(BlockingCollection<JobInfo<T>> periodicJobsCollection)
+        protected JobsManager(BlockingCollection<JobInfo<T>> jobsCollection)
         {
-            _unmanagedJobs = periodicJobsCollection;
-            _stayActive = true;
-            _timers = new HashSet<Timer>();
+            UnmanagedJobs = jobsCollection;
+            StayActive = true;
+            Timers = new HashSet<Timer>();
             _mutex = new Mutex(false);
+            disposed = false;
         }
 
         public void ManageJobs()
         {
-            while (_stayActive)
+            while (StayActive)
             {
-                JobInfo<T> jobInfo = _unmanagedJobs.Take();
                 try
                 {
-                    _mutex.WaitOne();
-                    if (_stayActive)
+                    if (_mutex != null)
+                        _mutex.WaitOne();
+                    if (StayActive)
                     {
-                        _mutex.GetAccessControl();
+                        JobInfo<T> jobInfo = UnmanagedJobs.Take();
+                        if (jobInfo == null)
+                            break;
                         DoJobManagement(jobInfo);
                     }
                 }
@@ -50,16 +52,19 @@ namespace Rogolev.Nsudotnet.TaskScheduler
 
         public void Dispose()
         {
+            if (disposed)
+                return;
             try
             {
-                _mutex.GetAccessControl();
-                _stayActive = false;
-                foreach (Timer timer in _timers)
+                UnmanagedJobs.Add(null);
+                _mutex.WaitOne();
+                StayActive = false;
+                UnmanagedJobs.Add(null);
+                foreach (Timer timer in Timers)
                 {
-                    _mutex.WaitOne();
                     timer.Dispose();
                 }
-
+                UnmanagedJobs.Dispose();
             }
             finally
             {
@@ -67,8 +72,14 @@ namespace Rogolev.Nsudotnet.TaskScheduler
                 {
                     _mutex.ReleaseMutex();
                     _mutex.Dispose();
+                    _mutex = null;
                 }
             }
+            Dispose(true);
+            disposed = true;
+            GC.SuppressFinalize(this);
         }
+
+        protected abstract void Dispose(bool disposing);
     }
 }

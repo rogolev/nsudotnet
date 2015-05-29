@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace Rogolev.Nsudotnet.TaskScheduler
@@ -16,6 +15,8 @@ namespace Rogolev.Nsudotnet.TaskScheduler
         private Thread _delayedJobManagerThread;
         private Thread _periodicJobManagerThread;
         private Thread _cronJobManagerThread;
+        private bool disposed;
+        private const string disposedWarning = "This object has been disposed!";
         public TaskScheduler()
         {
             _delayedJobsCollection = new BlockingCollection<JobInfo<TimeSpan>>();
@@ -30,42 +31,59 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             _delayedJobManagerThread.Start();
             _periodicJobManagerThread.Start();
             _cronJobManagerThread.Start();
+            disposed = false;
         }
         public void ScheduleDelayedJob(IJob job, TimeSpan delay, object argument)
         {
+            if (disposed)
+                throw new ObjectDisposedException(disposedWarning);
             _delayedJobsCollection.Add(new JobInfo<TimeSpan>(job, delay, argument));
         }
 
         public void SchedulePeriodicJob(IJob job, TimeSpan period, object argument)
         {
+            if (disposed)
+                throw new ObjectDisposedException(disposedWarning);
             _periodicJobsCollection.Add(new JobInfo<TimeSpan>(job, period, argument));
         }
 
         public void SchedulePeriodicJob(IJob job, string cronExpression, object argument)
         {
+            if (disposed)
+                throw new ObjectDisposedException(disposedWarning);
             _cronJobsCollection.Add(new JobInfo<string>(job, cronExpression, argument));
         }
 
         public void Dispose()
         {
-            if (_delayedJobsManager != null)
-                _delayedJobsManager.Dispose();
-            _delayedJobsManager = null;
-            if (_periodicJobsManager != null)
-                _periodicJobsManager.Dispose();
-            _periodicJobsManager = null;
-            if (_cronJobsManager != null)
-                _cronJobsManager.Dispose();
-            _cronJobsManager = null;
-            if (_delayedJobsCollection != null)
-                _delayedJobsCollection.Dispose();
-            _delayedJobsCollection = null;
-            if (_periodicJobsCollection != null)
-                _periodicJobsCollection.Dispose();
-            _periodicJobsCollection = null;
-            if (_cronJobsCollection != null)
-                Dispose();
-            _cronJobsCollection = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_delayedJobsManager != null)
+                    _delayedJobsManager.Dispose();
+                _delayedJobsManager = null;
+                if (_periodicJobsManager != null)
+                    _periodicJobsManager.Dispose();
+                _periodicJobsManager = null;
+                if (_cronJobsManager != null)
+                    _cronJobsManager.Dispose();
+                _cronJobsManager = null;
+                if (_delayedJobsCollection != null)
+                    _delayedJobsCollection.Dispose();
+                _delayedJobsCollection = null;
+                if (_periodicJobsCollection != null)
+                    _periodicJobsCollection.Dispose();
+                _periodicJobsCollection = null;
+                if (_cronJobsCollection != null)
+                    _cronJobsCollection.Dispose();
+                _cronJobsCollection = null;
+                disposed = true;
+            }
         }
     }
 }
