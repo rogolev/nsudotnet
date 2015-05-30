@@ -9,11 +9,11 @@ namespace Rogolev.Nsudotnet.TaskScheduler
 {
     internal abstract class JobsManager<T> : IDisposable
     {
-        protected readonly BlockingCollection<JobInfo<T>> UnmanagedJobs;
+        protected BlockingCollection<JobInfo<T>> UnmanagedJobs;
         protected bool StayActive;
-        protected Mutex _mutex;
+        private Mutex _mutex;
         protected HashSet<Timer> Timers;
-        private bool disposed;
+        private bool _disposed;
 
         protected JobsManager(BlockingCollection<JobInfo<T>> jobsCollection)
         {
@@ -21,7 +21,7 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             StayActive = true;
             Timers = new HashSet<Timer>();
             _mutex = new Mutex(false);
-            disposed = false;
+            _disposed = false;
         }
 
         public void ManageJobs()
@@ -52,34 +52,45 @@ namespace Rogolev.Nsudotnet.TaskScheduler
 
         public void Dispose()
         {
-            if (disposed)
+            if (_disposed)
                 return;
-            try
-            {
-                UnmanagedJobs.Add(null);
-                _mutex.WaitOne();
-                StayActive = false;
-                UnmanagedJobs.Add(null);
-                foreach (Timer timer in Timers)
-                {
-                    timer.Dispose();
-                }
-                UnmanagedJobs.Dispose();
-            }
-            finally
-            {
-                if (_mutex != null)
-                {
-                    _mutex.ReleaseMutex();
-                    _mutex.Dispose();
-                    _mutex = null;
-                }
-            }
             Dispose(true);
-            disposed = true;
             GC.SuppressFinalize(this);
         }
 
-        protected abstract void Dispose(bool disposing);
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                try
+                {
+                    UnmanagedJobs.Add(null);
+                    _mutex.WaitOne();
+                    StayActive = false;
+                    UnmanagedJobs.Add(null);
+                    foreach (Timer timer in Timers)
+                    {
+                        timer.Dispose();
+                    }
+                    UnmanagedJobs.Dispose();
+                }
+                finally
+                {
+                    if (_mutex != null)
+                    {
+                        _mutex.ReleaseMutex();
+                        _mutex.Dispose();
+                        _mutex = null;
+                    }
+                }
+            _mutex = null;
+            UnmanagedJobs = null;
+            Timers = null;
+            _disposed = true;
+        }
+
+        protected ~JobsManager()
+        {
+            Dispose(false);
+        }
     }
 }

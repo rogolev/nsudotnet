@@ -10,10 +10,7 @@ namespace Rogolev.Nsudotnet.TaskScheduler
     {
         private readonly BlockingCollection<JobInfo<string>> _unmanagedJobs;
         private readonly BlockingCollection<JobInfo<TimeSpan>> _jobsForDelayedJobsManager;
-        //private HashSet<Timer> timers;
         private DelayedJobsManager _delayedJobsManager;
-        /*private bool _isActive;
-        private Mutex _mutex;*/
         private Thread _delayedJobsManagerThread;
 
         public CronJobsManager(BlockingCollection<JobInfo<string>> cronJobsCollection) : base(cronJobsCollection)
@@ -50,8 +47,13 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             {
                 if (_delayedJobsManager != null)
                     _delayedJobsManager.Dispose();
-                _delayedJobsManager = null;
             }
+            _delayedJobsManager = null;
+        }
+
+        protected ~CronJobsManager()
+        {
+            Dispose(false);
         }
     }
 }
