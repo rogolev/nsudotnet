@@ -50,10 +50,5 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             }
             _delayedJobsManager = null;
         }
-
-        protected ~CronJobsManager()
-        {
-            Dispose(false);
-        }
     }
 }

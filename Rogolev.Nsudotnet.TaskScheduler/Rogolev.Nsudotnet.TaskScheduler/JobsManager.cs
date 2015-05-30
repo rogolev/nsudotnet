@@ -55,7 +55,6 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             if (_disposed)
                 return;
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -86,11 +85,6 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             UnmanagedJobs = null;
             Timers = null;
             _disposed = true;
-        }
-
-        protected ~JobsManager()
-        {
-            Dispose(false);
         }
     }
 }
