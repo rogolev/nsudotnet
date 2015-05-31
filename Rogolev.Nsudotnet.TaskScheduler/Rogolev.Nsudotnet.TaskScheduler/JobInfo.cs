@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Rogolev.Nsudotnet.TaskScheduler
+﻿namespace Rogolev.Nsudotnet.TaskScheduler
 {
     internal class JobInfo <T>
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading;
 using Timer = System.Timers.Timer;
 
@@ -85,6 +84,11 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             UnmanagedJobs = null;
             Timers = null;
             _disposed = true;
+        }
+
+        ~JobsManager()
+        {
+            Dispose(false);
         }
     }
 }

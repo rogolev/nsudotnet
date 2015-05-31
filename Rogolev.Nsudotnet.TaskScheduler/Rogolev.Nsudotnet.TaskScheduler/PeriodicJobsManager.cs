@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
@@ -18,14 +16,10 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             TimeSpan delay = jobInfo.Info;
             object argument = jobInfo.Argument;
             Timer timer = new Timer(delay.TotalMilliseconds);
-            timer.Elapsed += (object source, ElapsedEventArgs elapsedEventArgs) => job.Execute(argument);
+            timer.Elapsed += (source, elapsedEventArgs) => job.Execute(argument);
             Timers.Add(timer);
             timer.AutoReset = true;
             timer.Start();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
         }
     }
 }

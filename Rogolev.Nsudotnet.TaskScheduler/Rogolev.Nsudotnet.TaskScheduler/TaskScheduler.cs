@@ -12,11 +12,8 @@ namespace Rogolev.Nsudotnet.TaskScheduler
         private DelayedJobsManager _delayedJobsManager;
         private PeriodicJobsManager _periodicJobsManager;
         private CronJobsManager _cronJobsManager;
-        private Thread _delayedJobManagerThread;
-        private Thread _periodicJobManagerThread;
-        private Thread _cronJobManagerThread;
-        private bool disposed;
-        private const string disposedWarning = "This object has been disposed!";
+        private bool _disposed;
+        private const string DisposedWarning = "This object has been disposed!";
         public TaskScheduler()
         {
             _delayedJobsCollection = new BlockingCollection<JobInfo<TimeSpan>>();
@@ -25,32 +22,32 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             _delayedJobsManager = new DelayedJobsManager(_delayedJobsCollection);
             _periodicJobsManager = new PeriodicJobsManager(_periodicJobsCollection);
             _cronJobsManager = new CronJobsManager(_cronJobsCollection);
-            _delayedJobManagerThread = new Thread(_delayedJobsManager.ManageJobs);
-            _periodicJobManagerThread = new Thread(_periodicJobsManager.ManageJobs);
-            _cronJobManagerThread = new Thread(_cronJobsManager.ManageJobs);
-            _delayedJobManagerThread.Start();
-            _periodicJobManagerThread.Start();
-            _cronJobManagerThread.Start();
-            disposed = false;
+            Thread delayedJobManagerThread = new Thread(_delayedJobsManager.ManageJobs);
+            Thread periodicJobManagerThread = new Thread(_periodicJobsManager.ManageJobs);
+            Thread cronJobManagerThread = new Thread(_cronJobsManager.ManageJobs);
+            delayedJobManagerThread.Start();
+            periodicJobManagerThread.Start();
+            cronJobManagerThread.Start();
+            _disposed = false;
         }
         public void ScheduleDelayedJob(IJob job, TimeSpan delay, object argument)
         {
-            if (disposed)
-                throw new ObjectDisposedException(disposedWarning);
+            if (_disposed)
+                throw new ObjectDisposedException(DisposedWarning);
             _delayedJobsCollection.Add(new JobInfo<TimeSpan>(job, delay, argument));
         }
 
         public void SchedulePeriodicJob(IJob job, TimeSpan period, object argument)
         {
-            if (disposed)
-                throw new ObjectDisposedException(disposedWarning);
+            if (_disposed)
+                throw new ObjectDisposedException(DisposedWarning);
             _periodicJobsCollection.Add(new JobInfo<TimeSpan>(job, period, argument));
         }
 
         public void SchedulePeriodicJob(IJob job, string cronExpression, object argument)
         {
-            if (disposed)
-                throw new ObjectDisposedException(disposedWarning);
+            if (_disposed)
+                throw new ObjectDisposedException(DisposedWarning);
             _cronJobsCollection.Add(new JobInfo<string>(job, cronExpression, argument));
         }
 
@@ -66,24 +63,29 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             {
                 if (_delayedJobsManager != null)
                     _delayedJobsManager.Dispose();
-                _delayedJobsManager = null;
                 if (_periodicJobsManager != null)
                     _periodicJobsManager.Dispose();
-                _periodicJobsManager = null;
                 if (_cronJobsManager != null)
                     _cronJobsManager.Dispose();
-                _cronJobsManager = null;
                 if (_delayedJobsCollection != null)
                     _delayedJobsCollection.Dispose();
-                _delayedJobsCollection = null;
                 if (_periodicJobsCollection != null)
                     _periodicJobsCollection.Dispose();
-                _periodicJobsCollection = null;
                 if (_cronJobsCollection != null)
                     _cronJobsCollection.Dispose();
-                _cronJobsCollection = null;
-                disposed = true;
             }
+            _delayedJobsManager = null;
+            _periodicJobsManager = null;
+            _cronJobsManager = null;
+            _delayedJobsCollection = null;
+            _periodicJobsCollection = null;
+            _cronJobsCollection = null;
+            _disposed = true;
+        }
+
+        ~TaskScheduler()
+        {
+            Dispose(true);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
 using Timer = System.Timers.Timer;
 
@@ -8,17 +7,15 @@ namespace Rogolev.Nsudotnet.TaskScheduler
 {
     internal class CronJobsManager : JobsManager<string>
     {
-        private readonly BlockingCollection<JobInfo<string>> _unmanagedJobs;
         private readonly BlockingCollection<JobInfo<TimeSpan>> _jobsForDelayedJobsManager;
         private DelayedJobsManager _delayedJobsManager;
-        private Thread _delayedJobsManagerThread;
 
         public CronJobsManager(BlockingCollection<JobInfo<string>> cronJobsCollection) : base(cronJobsCollection)
         {
             _jobsForDelayedJobsManager = new BlockingCollection<JobInfo<TimeSpan>>();
             _delayedJobsManager = new DelayedJobsManager(_jobsForDelayedJobsManager);
-            _delayedJobsManagerThread = new Thread(_delayedJobsManager.ManageJobs);
-            _delayedJobsManagerThread.Start();
+            Thread delayedJobsManagerThread = new Thread(_delayedJobsManager.ManageJobs);
+            delayedJobsManagerThread.Start();
         }
 
         protected override void DoJobManagement(JobInfo<string> jobInfo)
@@ -43,6 +40,7 @@ namespace Rogolev.Nsudotnet.TaskScheduler
 
         protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
             if (disposing)
             {
                 if (_delayedJobsManager != null)

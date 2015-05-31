@@ -36,9 +36,5 @@ namespace Rogolev.Nsudotnet.TaskScheduler
             };
             timer.Start();
         }
-
-        protected override void Dispose(bool disposing)
-        {
-        }
     }
 }
